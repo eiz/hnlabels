@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>HN Labels</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <main class="popup">
+      <header class="popup-header">
+        <img class="popup-icon" src="../icons/icon128.png" alt="" />
+        <div>
+          <h1>HN Labels</h1>
+          <div id="statusText" class="status-text">Checking Drive status...</div>
+        </div>
+      </header>
+
+      <dl class="stats">
+        <div>
+          <dt>Users</dt>
+          <dd id="userCount">0</dd>
+        </div>
+        <div>
+          <dt>History</dt>
+          <dd id="historyCount">0</dd>
+        </div>
+      </dl>
+
+      <div class="details">
+        <div>
+          <span class="detail-label">Last sync</span>
+          <span id="lastSync">Never</span>
+        </div>
+        <div>
+          <span class="detail-label">Pending changes</span>
+          <span id="dirtyState">No</span>
+        </div>
+      </div>
+
+      <p id="errorText" class="error" hidden></p>
+      <p id="noticeText" class="notice" hidden></p>
+
+      <div class="actions">
+        <button id="connectButton" class="primary" type="button">
+          Connect Google Drive
+        </button>
+        <button id="syncButton" type="button">Sync now</button>
+        <button id="exportButton" type="button">Export JSON</button>
+        <button id="importButton" type="button">Import JSON</button>
+        <button id="disconnectButton" type="button">Disconnect</button>
+      </div>
+      <input id="importFile" type="file" accept="application/json,.json" hidden />
+    </main>
+    <script src="popup.js"></script>
+  </body>
+</html>
