@@ -57,6 +57,16 @@ The toolbar popup has **Export JSON** and **Import JSON** buttons.
 - Imported data is marked as pending, so it will sync to Drive if Drive is connected.
 - Import is merge-only; it does not wipe existing labels.
 
+## Store screenshots
+
+Chrome Web Store screenshots are generated with fake Hacker News data so the listing does not show real users or posts.
+
+```powershell
+node tools\generate-screenshots.js
+```
+
+Generated screenshots are written to `assets\screenshots`.
+
 ## Files
 
 - `manifest.json`: Chrome extension manifest, permissions, OAuth scope, popup, and background worker.

@@ -1,0 +1,458 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Mock HN Labels Screenshot</title>
+    <link rel="stylesheet" href="../../src/content.css" />
+    <link rel="stylesheet" href="../../src/popup.css" />
+    <style>
+      body {
+        background: #f6f6ef;
+        color: #000;
+        font: 13px Verdana, Geneva, sans-serif;
+        margin: 0;
+        overflow: hidden;
+      }
+
+      a {
+        color: #000;
+      }
+
+      .page {
+        margin: 0 auto;
+        max-width: 1180px;
+        min-height: 800px;
+      }
+
+      .topbar {
+        align-items: center;
+        background: #ff6600;
+        color: #000;
+        display: flex;
+        gap: 6px;
+        height: 25px;
+        padding: 0 4px;
+      }
+
+      .logo {
+        align-items: center;
+        border: 1px solid #fff;
+        color: #fff;
+        display: inline-flex;
+        font-weight: 700;
+        height: 18px;
+        justify-content: center;
+        width: 18px;
+      }
+
+      .brand {
+        font-weight: 700;
+      }
+
+      .nav {
+        color: #000;
+        flex: 1;
+        font-size: 12px;
+      }
+
+      .login {
+        font-size: 12px;
+      }
+
+      .content {
+        padding: 10px 16px 40px;
+      }
+
+      .title-row {
+        display: grid;
+        gap: 7px;
+        grid-template-columns: 18px 1fr;
+        margin-top: 2px;
+      }
+
+      .votearrow {
+        color: #828282;
+        font-size: 20px;
+        line-height: 1;
+        text-align: center;
+      }
+
+      .titleline {
+        font-size: 14px;
+        line-height: 1.35;
+      }
+
+      .sitebit,
+      .subtext,
+      .comhead {
+        color: #828282;
+        font-size: 10px;
+      }
+
+      .sitebit {
+        margin-left: 4px;
+      }
+
+      .subtext {
+        margin: 2px 0 18px 25px;
+      }
+
+      .comment-row {
+        display: grid;
+        gap: 9px;
+        grid-template-columns: 24px 1fr;
+        margin: 17px 0 0;
+      }
+
+      .comment {
+        font-size: 13px;
+        line-height: 1.45;
+        margin-top: 7px;
+        max-width: 860px;
+      }
+
+      .reply {
+        color: #000;
+        display: inline-block;
+        font-size: 10px;
+        margin-top: 8px;
+      }
+
+      .indent-1 {
+        margin-left: 42px;
+      }
+
+      .indent-2 {
+        margin-left: 86px;
+      }
+
+      .hn-label-pill {
+        font-size: 11px;
+        line-height: 1.45;
+      }
+
+      .hn-label-edit {
+        font-size: 11px;
+      }
+
+      .mock-popup-backdrop {
+        background: rgba(0, 0, 0, 0.04);
+        inset: 0;
+        position: fixed;
+      }
+
+      .mock-extension-popup {
+        background: #f6f6ef;
+        border: 1px solid #cfcfc4;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
+        position: fixed;
+        right: 34px;
+        top: 44px;
+        z-index: 2147483646;
+      }
+
+      .mock-extension-popup .popup {
+        width: 310px;
+      }
+
+      .mock-extension-popup .actions {
+        grid-template-columns: 1fr;
+      }
+
+      .mock-extension-popup .error {
+        display: none;
+      }
+
+      .mock-extension-popup .notice {
+        display: block;
+      }
+
+    </style>
+  </head>
+  <body>
+    <main class="page">
+      <div class="topbar">
+        <span class="logo">Y</span>
+        <span class="brand">Hacker News</span>
+        <span class="nav">new | past | comments | ask | show | jobs | submit</span>
+        <span class="login">demo</span>
+      </div>
+
+      <section class="content" aria-label="Mock Hacker News thread">
+        <div class="title-row">
+          <div class="votearrow">▲</div>
+          <div>
+            <div class="titleline">
+              Show HN: A tiny local-first browser tool for remembering usernames
+              <span class="sitebit">(example.test)</span>
+            </div>
+          </div>
+        </div>
+        <div class="subtext">
+          417 points by
+          <a class="hnuser" href="user?id=labelwright">labelwright</a>
+          3 hours ago | hide | past | favorite | 84 comments
+        </div>
+
+        <article class="comment-row">
+          <div class="votearrow">▲</div>
+          <div>
+            <div class="comhead">
+              <a class="hnuser" href="user?id=dryrun42">dryrun42</a>
+              2 hours ago | next | parent | prev | favorite | on: A small browser tool
+            </div>
+            <p class="comment">
+              I like tools that make context visible without turning the page into
+              a dashboard. Keeping the labels inline makes this feel like part of
+              the thread instead of a separate notes app.
+            </p>
+            <a class="reply" href="#">reply</a>
+          </div>
+        </article>
+
+        <article class="comment-row indent-1">
+          <div class="votearrow">▲</div>
+          <div>
+            <div class="comhead">
+              <a class="hnuser" href="user?id=packetgarden">packetgarden</a>
+              1 hour ago | parent | next | favorite
+            </div>
+            <p class="comment">
+              The app data folder approach is a good fit. You get sync without
+              asking for broad Drive access, and the backup JSON keeps the exit
+              path obvious.
+            </p>
+            <a class="reply" href="#">reply</a>
+          </div>
+        </article>
+
+        <article class="comment-row indent-2">
+          <div class="votearrow">▲</div>
+          <div>
+            <div class="comhead">
+              <a class="hnuser" href="user?id=sunlitcache">sunlitcache</a>
+              53 minutes ago | parent | next | favorite
+            </div>
+            <p class="comment">
+              Import/export matters more than people expect. Once personal data
+              is involved, being able to inspect the file is part of the feature.
+            </p>
+            <a class="reply" href="#">reply</a>
+          </div>
+        </article>
+
+        <article class="comment-row">
+          <div class="votearrow">▲</div>
+          <div>
+            <div class="comhead">
+              <a class="hnuser" href="user?id=lemmasmith">lemmasmith</a>
+              34 minutes ago | parent | next | favorite
+            </div>
+            <p class="comment">
+              I would also expect edit history. It is useful to know why I gave
+              someone a label, especially if the original comment was the reason.
+            </p>
+            <a class="reply" href="#">reply</a>
+          </div>
+        </article>
+
+        <article class="comment-row indent-1">
+          <div class="votearrow">▲</div>
+          <div>
+            <div class="comhead">
+              <a class="hnuser" href="user?id=notebooknode">notebooknode</a>
+              18 minutes ago | parent | next | favorite
+            </div>
+            <p class="comment">
+              The best version of this is boring in exactly the right way:
+              lightweight labels, no account to create, and a readable export.
+            </p>
+            <a class="reply" href="#">reply</a>
+          </div>
+        </article>
+
+      </section>
+    </main>
+
+    <script>
+      const mockData = {
+        schemaVersion: 1,
+        updatedAt: "2026-05-10T16:15:00.000Z",
+        labelsByUser: {
+          labelwright: ["project author"],
+          dryrun42: ["careful reviewer", "postgres hints"],
+          packetgarden: ["infra expert"],
+          sunlitcache: ["read later", "good examples"],
+          lemmasmith: ["teaches well"]
+        },
+        historyByUser: {
+          labelwright: [
+            {
+              at: "2026-05-10T15:52:00.000Z",
+              action: "updated",
+              labels: ["project author"],
+              url: "https://news.ycombinator.com/item?id=9001001",
+              title: "Show HN: A tiny browser tool for remembering usernames | Hacker News"
+            }
+          ],
+          dryrun42: [
+            {
+              at: "2026-05-10T15:42:00.000Z",
+              action: "updated",
+              labels: ["careful reviewer", "postgres hints"],
+              url: "https://news.ycombinator.com/item?id=9001001",
+              title: "Show HN: A tiny browser tool for remembering usernames | Hacker News"
+            },
+            {
+              at: "2026-05-03T19:20:00.000Z",
+              action: "updated",
+              labels: ["postgres hints"],
+              url: "https://news.ycombinator.com/item?id=9000880",
+              title: "Ask HN: How do you document production decisions? | Hacker News"
+            },
+            {
+              at: "2026-04-22T15:10:00.000Z",
+              action: "cleared",
+              labels: [],
+              url: "https://news.ycombinator.com/item?id=9000412",
+              title: "Launch HN: Notes for incident reviews | Hacker News"
+            }
+          ],
+          packetgarden: [
+            {
+              at: "2026-05-09T18:08:00.000Z",
+              action: "updated",
+              labels: ["infra expert"],
+              url: "https://news.ycombinator.com/item?id=9000931",
+              title: "Ask HN: Favorite tools for tiny teams? | Hacker News"
+            }
+          ],
+          sunlitcache: [
+            {
+              at: "2026-05-08T13:30:00.000Z",
+              action: "updated",
+              labels: ["read later", "good examples"],
+              url: "https://news.ycombinator.com/item?id=9000777",
+              title: "Show HN: Searchable personal notes | Hacker News"
+            }
+          ],
+          lemmasmith: [
+            {
+              at: "2026-05-04T11:15:00.000Z",
+              action: "updated",
+              labels: ["teaches well"],
+              url: "https://news.ycombinator.com/item?id=9000559",
+              title: "Tell HN: A better way to explain databases | Hacker News"
+            }
+          ]
+        }
+      };
+
+      const mockStatus = {
+        connected: true,
+        dirty: false,
+        fileId: "mock-drive-appdata-file",
+        lastError: "",
+        lastSyncAt: "2026-05-10T16:18:00.000Z",
+        legacySyncImported: true
+      };
+
+      window.chrome = {
+        runtime: {
+          lastError: null,
+          sendMessage(message, callback) {
+            if (message.type === "HN_LABELS_GET_STATE") {
+              callback({ ok: true, data: mockData, status: mockStatus });
+              return;
+            }
+            callback({ ok: true, data: mockData, status: mockStatus });
+          }
+        },
+        storage: {
+          local: {
+            get(defaults, callback) {
+              callback({ ...defaults, hnLabelsData: mockData });
+            },
+            set(_items, callback) {
+              callback?.();
+            }
+          },
+          onChanged: {
+            addListener() {}
+          }
+        }
+      };
+    </script>
+    <script src="../../src/content.js"></script>
+    <script>
+      const shot = new URL(location.href).searchParams.get("shot") || "labels";
+
+      function showMockPopup() {
+        const backdrop = document.createElement("div");
+        backdrop.className = "mock-popup-backdrop";
+
+        const shell = document.createElement("aside");
+        shell.className = "mock-extension-popup";
+        shell.innerHTML = `
+          <main class="popup">
+            <header class="popup-header">
+              <img class="popup-icon" src="../../icons/icon128.png" alt="" />
+              <div>
+                <h1>HN Labels</h1>
+                <div class="status-text">Connected to Google Drive.</div>
+              </div>
+            </header>
+
+            <dl class="stats">
+              <div>
+                <dt>Users</dt>
+                <dd>5</dd>
+              </div>
+              <div>
+                <dt>History</dt>
+                <dd>8</dd>
+              </div>
+            </dl>
+
+            <div class="details">
+              <div>
+                <span class="detail-label">Last sync</span>
+                <span>May 10, 12:18 PM</span>
+              </div>
+              <div>
+                <span class="detail-label">Pending changes</span>
+                <span>No</span>
+              </div>
+            </div>
+
+            <p class="notice">Export and import JSON without connecting Drive.</p>
+
+            <div class="actions">
+              <button type="button">Sync now</button>
+              <button type="button">Export JSON</button>
+              <button type="button">Import JSON</button>
+              <button type="button">Disconnect</button>
+            </div>
+          </main>
+        `;
+
+        document.body.append(backdrop, shell);
+      }
+
+      window.addEventListener("load", () => {
+        setTimeout(() => {
+          if (shot === "history") {
+            document
+              .querySelector('[data-hn-labels-user="dryrun42"] .hn-label-pill')
+              ?.click();
+          }
+
+          if (shot === "popup") {
+            showMockPopup();
+          }
+        }, 250);
+      });
+    </script>
+  </body>
+</html>
