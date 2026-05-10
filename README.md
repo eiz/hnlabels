@@ -72,6 +72,7 @@ Generated screenshots are written to `assets\screenshots`.
 - `manifest.json`: Chrome extension manifest, permissions, OAuth scope, popup, and background worker.
 - `src/content.js`: Finds HN user links, renders labels/history, and sends edits to the background worker.
 - `src/background.js`: Owns local cache, Drive OAuth, Drive API reads/writes, and merge logic.
+- `src/shared/data.js`: Shared data normalization, merge, and history helpers.
 - `src/popup.html`, `src/popup.css`, `src/popup.js`: Toolbar popup for connect/sync/status.
 - `src/content.css`: Hacker News-styled inline UI for labels and popovers.
 - `icons/icon128.png`: Web Store extension icon.

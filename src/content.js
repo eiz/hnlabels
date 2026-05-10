@@ -1,9 +1,12 @@
 const DATA_STORAGE_KEY = "hnLabelsData";
-const MAX_LABELS_PER_USER = 8;
-const MAX_LABEL_LENGTH = 80;
-const MAX_HISTORY_ENTRIES = 50;
-const MAX_HISTORY_TITLE_LENGTH = 160;
-const MAX_HISTORY_URL_LENGTH = 500;
+const {
+  createEmptyData,
+  labelsAreEqual,
+  normalizeData,
+  normalizeHistoryTitle,
+  normalizeHistoryUrl,
+  normalizeLabels
+} = globalThis.HNLabelsData;
 const USER_SELECTOR = "a.hnuser[href^='user?id=']";
 
 let labelsByUser = {};
@@ -71,135 +74,10 @@ function sendRuntimeMessage(message) {
   });
 }
 
-function createEmptyData() {
-  return {
-    schemaVersion: 1,
-    labelsByUser: {},
-    historyByUser: {},
-    updatedAt: ""
-  };
-}
-
 function applyData(data) {
   const normalizedData = normalizeData(data);
   labelsByUser = normalizedData.labelsByUser;
   historyByUser = normalizedData.historyByUser;
-}
-
-function normalizeData(data) {
-  if (!data || typeof data !== "object" || Array.isArray(data)) {
-    return createEmptyData();
-  }
-
-  return {
-    schemaVersion: 1,
-    labelsByUser: normalizeLabelStore(data.labelsByUser),
-    historyByUser: normalizeHistoryStore(data.historyByUser),
-    updatedAt: normalizeTimestamp(data.updatedAt)
-  };
-}
-
-function normalizeLabelStore(store) {
-  if (!store || typeof store !== "object" || Array.isArray(store)) {
-    return {};
-  }
-
-  return Object.fromEntries(
-    Object.entries(store)
-      .map(([user, labels]) => [String(user).trim(), normalizeLabels(labels)])
-      .filter(([user, labels]) => user && labels.length > 0)
-  );
-}
-
-function normalizeHistoryStore(store) {
-  if (!store || typeof store !== "object" || Array.isArray(store)) {
-    return {};
-  }
-
-  return Object.fromEntries(
-    Object.entries(store)
-      .map(([user, entries]) => [
-        String(user).trim(),
-        normalizeHistoryEntries(entries)
-      ])
-      .filter(([user, entries]) => user && entries.length > 0)
-  );
-}
-
-function normalizeLabels(labels) {
-  if (!Array.isArray(labels)) {
-    return [];
-  }
-
-  const seen = new Set();
-  return labels
-    .map((label) => String(label).trim().replace(/\s+/g, " "))
-    .map((label) => label.slice(0, MAX_LABEL_LENGTH))
-    .filter(Boolean)
-    .filter((label) => {
-      const key = label.toLowerCase();
-      if (seen.has(key)) {
-        return false;
-      }
-      seen.add(key);
-      return true;
-    })
-    .slice(0, MAX_LABELS_PER_USER);
-}
-
-function normalizeHistoryEntries(entries) {
-  if (!Array.isArray(entries)) {
-    return [];
-  }
-
-  return entries
-    .map(normalizeHistoryEntry)
-    .filter(Boolean)
-    .slice(0, MAX_HISTORY_ENTRIES);
-}
-
-function normalizeHistoryEntry(entry) {
-  if (!entry || typeof entry !== "object" || Array.isArray(entry)) {
-    return null;
-  }
-
-  const labels = normalizeLabels(entry.labels || []);
-
-  return {
-    at: normalizeTimestamp(entry.at) || new Date().toISOString(),
-    action: labels.length > 0 ? "updated" : "cleared",
-    labels,
-    url: normalizeHistoryUrl(entry.url),
-    title: normalizeHistoryTitle(entry.title || entry.url || "Hacker News")
-  };
-}
-
-function normalizeTimestamp(value) {
-  const parsedAt = Date.parse(value);
-  return Number.isFinite(parsedAt) ? new Date(parsedAt).toISOString() : "";
-}
-
-function normalizeHistoryUrl(url) {
-  const value =
-    typeof url === "string" ? url.trim().slice(0, MAX_HISTORY_URL_LENGTH) : "";
-  if (!value) {
-    return "";
-  }
-
-  try {
-    const parsedUrl = new URL(value, location.href);
-    return parsedUrl.protocol === "http:" || parsedUrl.protocol === "https:"
-      ? parsedUrl.href
-      : "";
-  } catch {
-    return "";
-  }
-}
-
-function normalizeHistoryTitle(title) {
-  const value =
-    typeof title === "string" ? title.trim().replace(/\s+/g, " ") : "";
-  return (value || "Hacker News").slice(0, MAX_HISTORY_TITLE_LENGTH);
 }
 
 function parseLabels(rawValue) {
@@ -511,13 +389,6 @@ async function updateUserLabels(username, labels) {
     applyData(response.data);
   }
   renderAllUsers();
-}
-
-function labelsAreEqual(leftLabels, rightLabels) {
-  return (
-    leftLabels.length === rightLabels.length &&
-    leftLabels.every((label, index) => label === rightLabels[index])
-  );
 }
 
 function formatTimestamp(timestamp) {
