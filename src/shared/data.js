@@ -252,10 +252,8 @@
     mergeData,
     newestTimestamp,
     normalizeData,
-    normalizeHistoryEntries,
     normalizeHistoryTitle,
     normalizeHistoryUrl,
-    normalizeLabelStore,
     normalizeLabels,
     normalizeTimestamp
   };

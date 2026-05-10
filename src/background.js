@@ -2,8 +2,6 @@ importScripts("shared/data.js");
 
 const DATA_STORAGE_KEY = "hnLabelsData";
 const STATUS_STORAGE_KEY = "hnLabelsDriveStatus";
-const LEGACY_LABELS_STORAGE_KEY = "hnUserLabels";
-const LEGACY_HISTORY_STORAGE_PREFIX = "hnUserLabelHistory:";
 const DRIVE_FILE_NAME = "hn-labels-data.json";
 const DRIVE_FILES_URL = "https://www.googleapis.com/drive/v3/files";
 const DRIVE_UPLOAD_URL = "https://www.googleapis.com/upload/drive/v3/files";
@@ -18,18 +16,10 @@ const {
   mergeData,
   newestTimestamp,
   normalizeData,
-  normalizeHistoryEntries,
-  normalizeLabelStore,
   normalizeLabels,
   normalizeTimestamp
 } = globalThis.HNLabelsData;
 const AUTO_SYNC_INTERVAL_MS = 5 * 60 * 1000;
-
-chrome.runtime.onInstalled.addListener(() => {
-  migrateLegacySyncStorage().catch((error) => {
-    console.warn("HN Labels legacy migration failed", error);
-  });
-});
 
 chrome.runtime.onStartup.addListener(() => {
   syncDriveIfConnected(false).catch((error) => {
@@ -47,7 +37,6 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
 async function handleMessage(message) {
   switch (message?.type) {
     case "HN_LABELS_GET_STATE":
-      await migrateLegacySyncStorage();
       syncDriveIfConnected(false).catch((error) => {
         console.warn("HN Labels background sync failed", error);
       });
@@ -84,8 +73,6 @@ async function handleMessage(message) {
 }
 
 async function exportUserData() {
-  await migrateLegacySyncStorage();
-
   return {
     export: {
       app: "HN Labels",
@@ -98,8 +85,6 @@ async function exportUserData() {
 }
 
 async function importUserData(payload) {
-  await migrateLegacySyncStorage();
-
   const importedData = normalizeImportPayload(payload);
   const localData = await getLocalData();
   const mergedData = mergeData(localData, importedData);
@@ -169,8 +154,6 @@ async function updateUserLabels(message) {
     throw new Error("Missing Hacker News username.");
   }
 
-  await migrateLegacySyncStorage();
-
   const data = await getLocalData();
   const labels = normalizeLabels(message.labels || []);
   const previousLabels = data.labelsByUser[username] || [];
@@ -237,8 +220,6 @@ async function syncDrive({ interactive, force }) {
 }
 
 async function syncDriveCore({ interactive, force }) {
-  await migrateLegacySyncStorage();
-
   const status = await getDriveStatus();
   const lastSyncAt = Date.parse(status.lastSyncAt);
   const isFresh =
@@ -518,54 +499,6 @@ async function disconnectDrive() {
   });
 }
 
-async function migrateLegacySyncStorage() {
-  const status = await getDriveStatus();
-  if (status.legacySyncImported) {
-    return;
-  }
-
-  const syncItems = await getFromStorage(chrome.storage.sync, null);
-  const legacyLabels = normalizeLabelStore(syncItems[LEGACY_LABELS_STORAGE_KEY]);
-  const legacyHistory = {};
-
-  Object.entries(syncItems).forEach(([key, value]) => {
-    if (!key.startsWith(LEGACY_HISTORY_STORAGE_PREFIX)) {
-      return;
-    }
-
-    const username = decodeHistoryUsername(key);
-    const entries = normalizeHistoryEntries(value);
-    if (username && entries.length > 0) {
-      legacyHistory[username] = entries;
-    }
-  });
-
-  const hasLegacyData =
-    Object.keys(legacyLabels).length > 0 || Object.keys(legacyHistory).length > 0;
-  if (hasLegacyData) {
-    const localData = await getLocalData();
-    const legacyData = normalizeData({
-      labelsByUser: legacyLabels,
-      historyByUser: legacyHistory,
-      updatedAt: new Date().toISOString()
-    });
-    const mergedData = mergeData(localData, legacyData);
-    mergedData.updatedAt = new Date().toISOString();
-    await setLocalData(mergedData);
-    await patchDriveStatus({ dirty: true });
-  }
-
-  await patchDriveStatus({ legacySyncImported: true });
-}
-
-function decodeHistoryUsername(storageKey) {
-  try {
-    return decodeURIComponent(storageKey.slice(LEGACY_HISTORY_STORAGE_PREFIX.length));
-  } catch {
-    return "";
-  }
-}
-
 async function getLocalData() {
   const items = await getFromStorage(chrome.storage.local, {
     [DATA_STORAGE_KEY]: createEmptyData()
@@ -630,8 +563,7 @@ function createDefaultStatus() {
     dirty: false,
     fileId: "",
     lastError: "",
-    lastSyncAt: "",
-    legacySyncImported: false
+    lastSyncAt: ""
   };
 }
 
@@ -645,7 +577,6 @@ function normalizeStatus(status) {
     dirty: Boolean(status.dirty),
     fileId: typeof status.fileId === "string" ? status.fileId : "",
     lastError: typeof status.lastError === "string" ? status.lastError : "",
-    lastSyncAt: normalizeTimestamp(status.lastSyncAt),
-    legacySyncImported: Boolean(status.legacySyncImported)
+    lastSyncAt: normalizeTimestamp(status.lastSyncAt)
   };
 }

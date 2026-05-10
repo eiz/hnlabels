@@ -45,7 +45,6 @@ For stable local OAuth, add the Chrome Web Store public key to `manifest.json` a
 
 - `chrome.storage.local`: cache, sync status, pending edits, Drive file ID.
 - Google Drive `appDataFolder`: private synced JSON file named `hn-labels-data.json`.
-- Old `chrome.storage.sync` label data is imported once into the local cache for migration.
 - [PRIVACY.md](PRIVACY.md) describes the stored data for Web Store privacy disclosure.
 
 ## Import and export
