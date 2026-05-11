@@ -1,33 +1,51 @@
 # HN Labels
 
-A small Chrome extension that lets you add persistent personal labels to Hacker News users.
+HN Labels is a Chrome extension for adding private, persistent labels to Hacker News users.
+
+Labels appear next to matching usernames across Hacker News. Each label edit is saved with a small history record, including when the edit happened and which HN page it came from.
+
+![HN Labels applied on a fake Hacker News page](assets/screenshots/01-labels-applied-1280x800.png)
 
 ## Features
 
-- Adds a `+ tag` control beside each Hacker News username.
-- Shows saved labels beside that username anywhere they appear on HN.
-- Records edit history with the page URL and title where each edit happened.
-- Opens edit history when you click an existing label.
-- Uses Google Drive `appDataFolder` for private cross-device sync.
-- Keeps a local cache so labels render quickly and offline edits can queue for sync.
-- Exports and imports JSON backups from the toolbar popup.
+- Add personal labels beside Hacker News usernames.
+- See saved labels anywhere the same username appears on HN.
+- Click labels to view and edit label history.
+- Store labels locally for fast rendering and offline use.
+- Optionally sync data through the user's private Google Drive `appDataFolder`.
+- Export and import JSON backups from the toolbar popup.
 
-## Local install
+## Install From Source
 
-1. Open Chrome and go to `chrome://extensions`.
-2. Enable **Developer mode**.
-3. Click **Load unpacked**.
-4. Select this folder: `C:\Users\eiz\Documents\hnlabel`.
-5. Visit [Hacker News](https://news.ycombinator.com/) and click `+ tag` beside any username.
+1. Clone this repository.
+2. Open Chrome and go to `chrome://extensions`.
+3. Enable **Developer mode**.
+4. Click **Load unpacked**.
+5. Select the repository root, the folder containing `manifest.json`.
+6. Visit [Hacker News](https://news.ycombinator.com/) and use the `+ tag` control beside a username.
 
-## Google Drive OAuth setup
+Google Drive sync requires a valid OAuth client. If the bundled OAuth client is not available to your Google account, create your own client and update `manifest.json`.
 
-This extension uses `chrome.identity` and the Drive API. It does not load remote code.
+## Google Drive Sync
 
-1. In GCP, enable the Google Drive API for the project.
-2. Create an OAuth client with application type **Chrome Extension**.
-3. Use the Chrome extension item ID as the OAuth client item/application ID.
-4. Copy the generated client ID into `manifest.json`:
+Drive sync uses Chrome's built-in `chrome.identity` API and the Google Drive API. The extension does not load remote code.
+
+The requested Drive scope is:
+
+```text
+https://www.googleapis.com/auth/drive.appdata
+```
+
+That scope limits the extension to its private app data folder in the user's Google Drive. The synced file is named `hn-labels-data.json`.
+
+To configure a new OAuth client:
+
+1. Create or select a Google Cloud project.
+2. Enable the Google Drive API.
+3. Configure the OAuth consent screen.
+4. Create an OAuth client with application type **Chrome Extension**.
+5. Use the Chrome extension item ID as the OAuth client item/application ID.
+6. Copy the generated client ID into `manifest.json`:
 
    ```json
    "oauth2": {
@@ -36,42 +54,65 @@ This extension uses `chrome.identity` and the Drive API. It does not load remote
    }
    ```
 
-5. Reload the unpacked extension.
-6. Click the HN Labels toolbar icon and choose **Connect Google Drive**.
+For stable unpacked-extension testing, add the Chrome Web Store item's public key to `manifest.json` as `"key"`. That makes the unpacked extension ID match the Web Store item ID used by the OAuth client.
 
-For stable local OAuth, add the Chrome Web Store public key to `manifest.json` as `"key"` after creating the draft item. That keeps the local unpacked extension ID aligned with the item ID used in GCP.
+## Data And Privacy
 
-## Storage model
+HN Labels stores:
 
-- `chrome.storage.local`: cache, sync status, pending edits, Drive file ID.
-- Google Drive `appDataFolder`: private synced JSON file named `hn-labels-data.json`.
-- [PRIVACY.md](PRIVACY.md) describes the stored data for Web Store privacy disclosure.
+- Hacker News usernames you label.
+- The labels you assign.
+- Edit timestamps.
+- The HN page URL and title where each edit happened.
+- Google Drive sync status, if Drive sync is enabled.
 
-## Import and export
+Data is stored in `chrome.storage.local`. If Drive sync is connected, the same label data is also stored in the user's Google Drive `appDataFolder`.
 
-The toolbar popup has **Export JSON** and **Import JSON** buttons.
+See [PRIVACY.md](PRIVACY.md) for the privacy policy text.
 
-- Export downloads a JSON backup of labels and edit history.
-- Import validates and merges a JSON backup into local data.
-- Imported data is marked as pending, so it will sync to Drive if Drive is connected.
-- Import is merge-only; it does not wipe existing labels.
+## Import And Export
 
-## Store screenshots
+The toolbar popup includes JSON backup controls:
 
-Chrome Web Store screenshots are generated with fake Hacker News data so the listing does not show real users or posts.
+- **Export JSON** downloads a backup of labels and edit history.
+- **Import JSON** validates and merges a backup into local data.
+
+Import is merge-only. It does not clear existing labels.
+
+## Development
+
+There is no build step for the extension itself. Chrome loads the files directly from the repository.
+
+Run JavaScript syntax checks:
+
+```powershell
+node --check src\shared\data.js
+node --check src\content.js
+node --check src\background.js
+node --check src\popup.js
+```
+
+Generate Chrome Web Store screenshots with fake HN data:
 
 ```powershell
 node tools\generate-screenshots.js
 ```
 
-Generated screenshots are written to `assets\screenshots`.
+Screenshots are written to `assets\screenshots`.
 
-## Files
+Create an upload zip:
+
+```powershell
+Compress-Archive -LiteralPath @('manifest.json','src','icons','README.md','PRIVACY.md') -DestinationPath dist\hn-labels-0.1.0.zip -Force
+```
+
+## Project Layout
 
 - `manifest.json`: Chrome extension manifest, permissions, OAuth scope, popup, and background worker.
+- `src/shared/data.js`: Shared data normalization, merge, and history helpers.
 - `src/content.js`: Finds HN user links, renders labels/history, and sends edits to the background worker.
 - `src/background.js`: Owns local cache, Drive OAuth, Drive API reads/writes, and merge logic.
-- `src/shared/data.js`: Shared data normalization, merge, and history helpers.
-- `src/popup.html`, `src/popup.css`, `src/popup.js`: Toolbar popup for connect/sync/status.
-- `src/content.css`: Hacker News-styled inline UI for labels and popovers.
-- `icons/icon128.png`: Web Store extension icon.
+- `src/popup.html`, `src/popup.css`, `src/popup.js`: Toolbar popup for Drive sync, import, export, and status.
+- `src/content.css`: Inline HN page styles for labels and popovers.
+- `tools/generate-screenshots.js`: Fake-data screenshot generator for Chrome Web Store assets.
+- `PRIVACY.md`: Privacy policy.
